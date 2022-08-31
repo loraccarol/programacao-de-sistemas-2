@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instrumentos</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+        .tipos{
+            border-color: red;
+            border: 2px solid;
+        }
+    </style>
+</head>
+<body>
+    <div id="conteudo"></div>
+    <button onClick="testPost()">Test Post</button>
+    <script>
+        function criarCardTipo(tipoInstrumento) {
+            return `<div class="tipos">Tipo: ${tipoInstrumento.tipo}</div>`;
+        }
+        function criarListaTipos(tipos) {
+            let lista = "";
+            for(var i=0; i<tipos.length; i++) {
+                lista += criarCardTipo(tipos[i]);
+            }
+            return lista;
+        }
+        
+        async function criarTipo(tipo) {
+            const resp = await fetch("/api/tipos",{
+                    method: "post",
+                    body: JSON.stringify(tipo),
+                    headers: new Headers({'content-type': 'application/json'}),
+                });
+            const novoTipo = await resp.json(resp);
+            document.getElementById("conteudo").innerHTML = criarCardTipo(novoTipo);
+        }
+
+        async function testPost() {
+            criarTipo({
+                tipo: "Sopro"
+            })
+        }
+
+        window.onload = async () => {
+            const resp = await fetch("/api/tipos");
+            const tipos = await resp.json();
+            let listTipos = criarListaTipos(tipos);
+            document.getElementById("conteudo").innerHTML = listTipos;
+        }
+    </script>
+</body>
+</html>
